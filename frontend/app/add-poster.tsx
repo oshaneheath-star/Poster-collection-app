@@ -305,6 +305,22 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#999999',
   },
+  extractingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  extractingText: {
+    marginTop: 12,
+    fontSize: 16,
+    color: '#FFFFFF',
+    fontWeight: '600',
+  },
   formGroup: {
     marginBottom: 24,
   },

@@ -175,6 +175,12 @@ export default function AddPoster() {
                 <Text style={styles.imagePlaceholderText}>Tap to select poster image</Text>
               </View>
             )}
+            {extractingDate && (
+              <View style={styles.extractingOverlay}>
+                <ActivityIndicator size="large" color="#FFFFFF" />
+                <Text style={styles.extractingText}>Detecting date from poster...</Text>
+              </View>
+            )}
           </TouchableOpacity>
 
           <View style={styles.formGroup}>

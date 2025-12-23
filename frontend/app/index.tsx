@@ -193,47 +193,73 @@ export default function Dashboard() {
     </View>
   );
 
-  const renderListView = () => (
-    <ScrollView style={styles.listContainer}>
-      {posters.length > 0 ? (
-        posters.map((poster) => (
-          <View key={poster.id} style={styles.listItem}>
-            <Image
-              source={{ uri: poster.image }}
-              style={styles.listItemImage}
-            />
-            <View style={styles.listItemInfo}>
-              <Text style={styles.listItemTitle}>{poster.title}</Text>
-              <View style={styles.listItemDetails}>
-                <Ionicons name="calendar-outline" size={14} color="#666" />
-                <Text style={styles.listItemDetailText}>{poster.date}</Text>
-              </View>
-              <View style={styles.listItemDetails}>
-                <Ionicons name="location-outline" size={14} color="#666" />
-                <Text style={styles.listItemDetailText}>{poster.location}</Text>
-              </View>
+  const renderListView = () => {
+    // Group posters by month for better organization
+    const groupedPosters: { [key: string]: Poster[] } = {};
+    posters.forEach((poster) => {
+      const date = new Date(poster.date);
+      const monthYear = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+      if (!groupedPosters[monthYear]) {
+        groupedPosters[monthYear] = [];
+      }
+      groupedPosters[monthYear].push(poster);
+    });
+
+    return (
+      <ScrollView style={styles.listContainer}>
+        {posters.length > 0 ? (
+          <>
+            <View style={styles.listHeader}>
+              <Ionicons name="list" size={20} color="#4A90E2" />
+              <Text style={styles.listHeaderText}>
+                Sorted by Date (Earliest to Latest)
+              </Text>
             </View>
-            <View style={styles.listItemActions}>
-              <TouchableOpacity
-                onPress={() => router.push(`/edit-poster/${poster.id}`)}
-                style={styles.listActionButton}
-              >
-                <Ionicons name="pencil" size={18} color="#4A90E2" />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => handleDeletePoster(poster.id)}
-                style={styles.listActionButton}
-              >
-                <Ionicons name="trash" size={18} color="#E74C3C" />
-              </TouchableOpacity>
-            </View>
-          </View>
-        ))
-      ) : (
-        <Text style={styles.emptyText}>No posters yet. Add your first poster!</Text>
-      )}
-    </ScrollView>
-  );
+            {Object.keys(groupedPosters).map((monthYear) => (
+              <View key={monthYear}>
+                <Text style={styles.monthHeader}>{monthYear}</Text>
+                {groupedPosters[monthYear].map((poster) => (
+                  <View key={poster.id} style={styles.listItem}>
+                    <Image
+                      source={{ uri: poster.image }}
+                      style={styles.listItemImage}
+                    />
+                    <View style={styles.listItemInfo}>
+                      <Text style={styles.listItemTitle}>{poster.title}</Text>
+                      <View style={styles.listItemDetails}>
+                        <Ionicons name="calendar-outline" size={14} color="#666" />
+                        <Text style={styles.listItemDetailText}>{poster.date}</Text>
+                      </View>
+                      <View style={styles.listItemDetails}>
+                        <Ionicons name="location-outline" size={14} color="#666" />
+                        <Text style={styles.listItemDetailText}>{poster.location}</Text>
+                      </View>
+                    </View>
+                    <View style={styles.listItemActions}>
+                      <TouchableOpacity
+                        onPress={() => router.push(`/edit-poster/${poster.id}`)}
+                        style={styles.listActionButton}
+                      >
+                        <Ionicons name="pencil" size={18} color="#4A90E2" />
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => handleDeletePoster(poster.id)}
+                        style={styles.listActionButton}
+                      >
+                        <Ionicons name="trash" size={18} color="#E74C3C" />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            ))}
+          </>
+        ) : (
+          <Text style={styles.emptyText}>No posters yet. Add your first poster!</Text>
+        )}
+      </ScrollView>
+    );
+  };
 
   if (loading) {
     return (

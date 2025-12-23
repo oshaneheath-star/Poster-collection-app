@@ -43,6 +43,35 @@ export default function AddPoster() {
     return true;
   };
 
+  const extractDateFromImage = async (imageBase64: string) => {
+    try {
+      setExtractingDate(true);
+      const response = await axios.post(`${BACKEND_URL}/api/extract-date`, {
+        image: imageBase64,
+      });
+
+      if (response.data.success && response.data.date) {
+        // Parse the extracted date and set it
+        const extractedDate = new Date(response.data.date);
+        setDate(extractedDate);
+        Alert.alert(
+          'Date Detected!',
+          `Found date: ${response.data.date}. You can still edit it if needed.`
+        );
+      } else {
+        Alert.alert(
+          'No Date Found',
+          'Could not detect a date from the poster. Please set it manually.'
+        );
+      }
+    } catch (error) {
+      console.error('Error extracting date:', error);
+      // Silently fail - user can set date manually
+    } finally {
+      setExtractingDate(false);
+    }
+  };
+
   const pickImage = async () => {
     const hasPermission = await requestPermissions();
     if (!hasPermission) return;

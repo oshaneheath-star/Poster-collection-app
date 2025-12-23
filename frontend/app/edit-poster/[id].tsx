@@ -31,6 +31,7 @@ export default function EditPoster() {
   const [imageBase64, setImageBase64] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [extractingDate, setExtractingDate] = useState(false);
 
   useEffect(() => {
     fetchPoster();

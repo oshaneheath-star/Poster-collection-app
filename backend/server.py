@@ -72,6 +72,74 @@ class Poster(BaseModel):
     createdAt: str
 
 
+# Date Extraction Route
+@api_router.post("/extract-date", response_model=ExtractDateResponse)
+async def extract_date_from_image(request: ExtractDateRequest):
+    try:
+        # Get the API key
+        api_key = os.getenv("EMERGENT_LLM_KEY")
+        if not api_key:
+            return ExtractDateResponse(
+                success=False,
+                message="API key not configured",
+                date=None
+            )
+        
+        # Initialize LLM chat with vision model
+        chat = LlmChat(
+            api_key=api_key,
+            session_id=f"date-extraction-{datetime.utcnow().timestamp()}",
+            system_message="You are a helpful assistant that extracts dates from poster images."
+        ).with_model("openai", "gpt-5.1")
+        
+        # Create image content from base64
+        image_base64 = request.image.split(',')[1] if ',' in request.image else request.image
+        image_content = ImageContent(image_base64=image_base64)
+        
+        # Create message with image
+        user_message = UserMessage(
+            text="""Analyze this poster image and extract any date information you can find. 
+Look for:
+- Event dates
+- Performance dates  
+- Show dates
+- Any dates visible on the poster
+
+Return ONLY the date in YYYY-MM-DD format. If you find multiple dates, return the earliest one.
+If no date is found, return 'NO_DATE_FOUND'.
+Do not include any explanation, just the date or 'NO_DATE_FOUND'.""",
+            file_contents=[image_content]
+        )
+        
+        # Send message and get response
+        response_text = await chat.send_message(user_message)
+        
+        # Extract date from response
+        date_match = re.search(r'(\d{4}-\d{2}-\d{2})', response_text)
+        
+        if date_match:
+            extracted_date = date_match.group(1)
+            return ExtractDateResponse(
+                success=True,
+                message="Date extracted successfully",
+                date=extracted_date
+            )
+        else:
+            return ExtractDateResponse(
+                success=False,
+                message="No date found in the poster",
+                date=None
+            )
+            
+    except Exception as e:
+        logger.error(f"Error extracting date from image: {str(e)}")
+        return ExtractDateResponse(
+            success=False,
+            message=f"Error: {str(e)}",
+            date=None
+        )
+
+
 # Poster Routes
 @api_router.post("/posters", response_model=Poster)
 async def create_poster(poster: PosterCreate):

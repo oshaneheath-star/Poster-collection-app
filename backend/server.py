@@ -41,6 +41,14 @@ def poster_helper(poster) -> dict:
 
 
 # Define Models
+class ExtractDateRequest(BaseModel):
+    image: str  # base64 encoded image
+
+class ExtractDateResponse(BaseModel):
+    date: Optional[str] = None
+    success: bool
+    message: str
+
 class PosterCreate(BaseModel):
     title: str
     date: str

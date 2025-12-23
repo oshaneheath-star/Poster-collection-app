@@ -29,6 +29,7 @@ export default function AddPoster() {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [imageBase64, setImageBase64] = useState('');
   const [loading, setLoading] = useState(false);
+  const [extractingDate, setExtractingDate] = useState(false);
 
   const requestPermissions = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();

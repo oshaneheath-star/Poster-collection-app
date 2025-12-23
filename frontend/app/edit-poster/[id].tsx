@@ -111,6 +111,9 @@ export default function EditPoster() {
       if (!result.canceled && result.assets[0].base64) {
         const base64Image = `data:image/jpeg;base64,${result.assets[0].base64}`;
         setImageBase64(base64Image);
+        
+        // Automatically extract date from the new image
+        await extractDateFromImage(base64Image);
       }
     } catch (error) {
       console.error('Error picking image:', error);

@@ -1,0 +1,10 @@
+{
+  "Build": {
+    "Preview":  {
+      "Node": "20.19.4
+     },
+     "Production":  {
+       "Node": "20.19.4"
+     }
+   }
+ }
